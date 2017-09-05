@@ -5,9 +5,13 @@
 #include <locale>    // for wstring_convert
 #include <codecvt>   // for codecvt_utf8
 
-#include "cmake_include.h"
-#include <git2.h>
 #include "config.h"
+
+#include "cmake_include.h"
+#ifdef ENABLE_GIT
+#include <git2.h>
+#endif
+
 
 int last_return_value;
 std::string current_bg;
@@ -83,6 +87,8 @@ void prompt_context() {
 
 
 void prompt_git() {
+#ifdef ENABLE_GIT
+
     git_libgit2_init();
 
     auto buf_size = static_cast<size_t>(pathconf(".", _PC_PATH_MAX));
@@ -130,7 +136,7 @@ void prompt_git() {
             }
         }
 #else
-    is_dirty = system("git status --porcelain --ignore-submodules >/dev/null") == 0;
+    is_dirty = system("test -n \"$(git status --porcelain --ignore-submodules)\"") == 0;
 #endif
 
         if (!ref.empty()) {
@@ -161,6 +167,7 @@ void prompt_git() {
 
 
     git_libgit2_shutdown();
+#endif
 }
 
 
@@ -174,8 +181,6 @@ std::string get_filesystem(std::string const& folder) {
     FILE * stream;
     const int max_buffer = 256;
     char buffer[max_buffer];
-
-
 
     stream = popen((std::string("df -PTh ") + folder + " | awk '{print $2}' | tail -1").c_str(), "r");
     if (stream) {
