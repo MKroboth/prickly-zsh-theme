@@ -1,0 +1,14 @@
+*
+!.gitignore
+!README
+!COPYING
+!CONTRIBUTING
+!CMakeLists.txt
+!*.h
+!*.c
+!*.cpp
+!*.hpp
+!*.txt
+!*.cmake
+!*.zsh-theme
+cmake-build-debug
